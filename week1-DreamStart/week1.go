@@ -30,21 +30,23 @@ func singleNumber(nums []int) int {
 *
 */
 func isPalindrome(x int) bool {
-	if x < 0 {
-		return false
-	}
-	// 转换为字符串
-	s := strconv.Itoa(x)
-	begin, end := 0, len(s)-1
-	for begin < end {
-		if s[begin] != s[end] {
-			return false
-		}
-		begin++
-		end--
-	}
-	return true
+	//负数、结尾为0的非零数不是
+    if x < 0 || (x % 10 == 0 && x != 0) {
+        return false
+    }
+    
+    reversedHalf := 0
+    original := x
+    // 计算回文数
+    for x > 0 {
+        reversedHalf = reversedHalf * 10 + x % 10
+        x /= 10
+    }
+    
+    return original == reversedHalf
 }
+
+
 
 /*
 *
@@ -54,31 +56,34 @@ func isPalindrome(x int) bool {
 *
 */
 func isValid(s string) bool {
-	stack := []rune{} // 使用 rune 切片作为栈
-	mapping := map[rune]rune{
-		')': '(',
-		'}': '{',
-		']': '[',
-	}
-
-	for _, char := range s {
-		if char == '(' || char == '{' || char == '[' {
-			stack = append(stack, char) // 左括号入栈
-		} else {
-			// 栈为空但遇到右括号
-			if len(stack) == 0 {
-				return false
-			}
-			top := stack[len(stack)-1]
-			if mapping[char] != top {
-				return false // 栈顶括号与当前右括号不匹配
-			}
-			// 匹配成功，删除第一个元素
-			stack = stack[:len(stack)-1]
-		}
-	}
-	// 栈为空则所有括号匹配
-	return len(stack) == 0
+    // 使用栈来跟踪开括号
+    stack := make([]rune, 0)
+    
+    // 创建映射表，用于快速查找匹配的括号
+    mapping := map[rune]rune{
+        ')': '(',
+        '}': '{',
+        ']': '[',
+    }
+    
+    // 遍历字符串中的每个字符
+    for _, char := range s {
+        // 如果是闭括号
+        if matchingOpen, isClose := mapping[char]; isClose {
+            // 检查栈是否为空或栈顶元素是否匹配
+            if len(stack) == 0 || stack[len(stack)-1] != matchingOpen {
+                return false
+            }
+            // 弹出栈顶元素
+            stack = stack[:len(stack)-1]
+        } else {
+            // 是开括号，压入栈中
+            stack = append(stack, char)
+        }
+    }
+    
+    // 如果栈为空，说明所有括号都正确匹配
+    return len(stack) == 0
 }
 
 /*
@@ -90,30 +95,34 @@ func isValid(s string) bool {
 */
 func longestCommonPrefix(strs []string) string {
 	if len(strs) == 0 {
-		return ""
-	}
-	// 数组仅一个元素，直接返回该元素
-	if len(strs) == 1 {
-		return strs[0]
-	}
-	// 以第一个元素为基准
-	prefix := strs[0]
-
-	for i := 1; i < len(strs); i++ {
-		// 比较当前前缀与第i个字符串，找出共同前缀
-		j := 0
-		for j < len(prefix) && j < len(strs[i]) && prefix[j] == strs[i][j] {
-			j++
-		}
-		// 更新前缀为共同部分
-		prefix = prefix[:j]
-		// 如果前缀为空，提前退出
-		if prefix == "" {
-			break
-		}
-	}
-
-	return prefix
+        return ""
+    }
+    
+    prefix := strs[0]
+    
+    for i := 1; i < len(strs); i++ {
+        // 逐步缩短前缀，直到匹配当前字符串
+        for len(prefix) > 0 {
+            // 检查当前字符串长度是否足够
+            if len(strs[i]) < len(prefix) {
+                prefix = prefix[:len(prefix)-1]
+                continue
+            }
+            // 比较前缀部分
+            if strs[i][:len(prefix)] != prefix {
+                prefix = prefix[:len(prefix)-1]
+            } else {
+                break
+            }
+        }
+        
+        // 如果前缀为空，提前返回
+        if prefix == "" {
+            return ""
+        }
+    }
+    
+    return prefix
 }
 
 /*
@@ -123,21 +132,16 @@ func longestCommonPrefix(strs []string) string {
 
 *
 */
-func addOne(digits []int) []int {
-	// 从右到左遍历数组
-	for i := len(digits) - 1; i >= 0; i-- {
-		// 如果当前位不是9，直接加1并返回
-		if digits[i] < 9 {
-			digits[i]++
-			return digits
-		}
-		// 如果当前位是9，进位，当前位变为0，继续遍历数组
-		digits[i] = 0
-	}
-
-	// 如果所有位都是9，需要在最前面添加一个1
-	// 创建一个新的数组，长度为原数组长度+1
-	result := make([]int, len(digits)+1)
+func plusOne(digits []int) []int {
+    for i := len(digits) - 1; i >= 0; i-- {
+        if digits[i]==9{
+            digits[i] = 0
+        }else{
+            digits[i] += 1
+            return digits
+        }
+    }
+    result := make([]int, len(digits)+1)
 	result[0] = 1
 	return result
 }
@@ -311,3 +315,4 @@ func main() {
 	fmt.Printf("输出：%v\n", result8)
 
 }
+
