@@ -156,21 +156,18 @@ func plusOne(digits []int) []int {
 *
 */
 func removeDuplicates(nums []int) int {
-	if len(nums) == 0 {
-		return 0
-	}
-	// 慢指针，记录不重复元素的位置
-	i := 0
-	// 快指针遍历数组
-	for j := 1; j < len(nums); j++ {
-		if nums[j] != nums[i] {
-			i++
-			// 将不重复元素前移
-			nums[i] = nums[j]
-		}
-	}
-	// 新数组长度为i+1
-	return i + 1
+    if len(nums) == 0 {
+        return 0
+    }
+    slow := 0
+    for  fast:=1;fast<len(nums);fast++{
+        if nums[fast]>nums[slow]{
+            slow++
+            nums[slow]=nums[fast]
+        }
+    }
+    slow+=1
+    return slow
 }
 
 /*
@@ -182,40 +179,52 @@ func removeDuplicates(nums []int) int {
 
 *
 */
+
 func merge(intervals [][]int) [][]int {
-	// 如果区间为空，直接返回
-	if len(intervals) == 0 {
-		return nil
-	}
+    if len(intervals) == 0 {
+        return [][]int{}
+    }
+    
+    // 自己实现快速排序
+    quickSort(intervals, 0, len(intervals)-1)
+    
+    merged := [][]int{}
+    for _, interval := range intervals {
+        if len(merged) == 0 || interval[0] > merged[len(merged)-1][1] {
+            merged = append(merged, interval)
+        } else {
+            if interval[1] > merged[len(merged)-1][1] {
+                merged[len(merged)-1][1] = interval[1]
+            }
+        }
+    }
+    
+    return merged
+}
 
-	// 按照区间的起始位置进行排序
-	sort.Slice(intervals, func(i, j int) bool {
-		return intervals[i][0] < intervals[j][0]
-	})
+func quickSort(arr [][]int, left, right int) {
+    if left >= right {
+        return
+    }
+    
+    pivotIndex := partition(arr, left, right)
+    quickSort(arr, left, pivotIndex-1)
+    quickSort(arr, pivotIndex+1, right)
+}
 
-	// 用于存储合并后的区间
-	result := [][]int{intervals[0]}
-
-	// 遍历排序后的区间
-	for i := 1; i < len(intervals); i++ {
-		// 获取结果集中的最后一个区间
-		last := result[len(result)-1]
-		// 当前区间
-		current := intervals[i]
-
-		// 如果当前区间的起始位置小于等于结果集中最后一个区间的结束位置，说明有重叠
-		if current[0] <= last[1] {
-			// 合并区间，取两个区间结束位置的最大值
-			if current[1] > last[1] {
-				last[1] = current[1]
-			}
-		} else {
-			// 没有重叠，直接添加到结果集
-			result = append(result, current)
-		}
-	}
-
-	return result
+func partition(arr [][]int, left, right int) int {
+    pivot := arr[right]
+    i := left - 1
+    
+    for j := left; j < right; j++ {
+        if arr[j][0] < pivot[0] || (arr[j][0] == pivot[0] && arr[j][1] < pivot[1]) {
+            i++
+            arr[i], arr[j] = arr[j], arr[i]
+        }
+    }
+    
+    arr[i+1], arr[right] = arr[right], arr[i+1]
+    return i + 1
 }
 
 /**
@@ -225,15 +234,16 @@ func merge(intervals [][]int) [][]int {
 **/
 
 func twoSum(nums []int, target int) []int {
-	numMap := make(map[int]int)
-	for i, num := range nums {
-		complement := target - num
-		if j, exists := numMap[complement]; exists {
-			return []int{nums[j], nums[i]}
-		}
-		numMap[num] = i
-	}
-	return []int{}
+    hashmap := make(map[int]int)
+    
+    for index, num := range nums {
+        anotherNum := target - num
+        if anotherIndex, exists := hashmap[anotherNum]; exists {
+            return []int{anotherIndex, index}
+        }
+        hashmap[num] = index
+    }
+    return nil
 }
 
 func main() {
@@ -315,4 +325,5 @@ func main() {
 	fmt.Printf("输出：%v\n", result8)
 
 }
+
 
