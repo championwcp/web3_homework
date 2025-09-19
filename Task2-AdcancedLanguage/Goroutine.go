@@ -9,16 +9,14 @@ import (
 // 第一题：奇数偶数打印协程
 func printOddEven() {
 	fmt.Println("=== 第一题：奇数偶数打印 ===")
-	
 	var wg sync.WaitGroup
 	wg.Add(2)
-
 	// 打印奇数的协程
 	go func() {
 		defer wg.Done()
 		for i := 1; i <= 10; i += 2 {
 			fmt.Printf("奇数: %d\n", i)
-			time.Sleep(100 * time.Millisecond) // 稍微延迟，观察并发效果
+			time.Sleep(100 * time.Millisecond) // 稍微延迟
 		}
 	}()
 
@@ -27,7 +25,7 @@ func printOddEven() {
 		defer wg.Done()
 		for i := 2; i <= 10; i += 2 {
 			fmt.Printf("偶数: %d\n", i)
-			time.Sleep(100 * time.Millisecond) // 稍微延迟，观察并发效果
+			time.Sleep(100 * time.Millisecond) // 延迟
 		}
 	}()
 
@@ -37,7 +35,6 @@ func printOddEven() {
 
 // 第二题：任务调度器
 type Task func()
-
 // 任务执行结果
 type TaskResult struct {
 	TaskName    string
@@ -47,7 +44,6 @@ type TaskResult struct {
 	Success     bool
 	Error       error
 }
-
 // 任务调度器
 type TaskScheduler struct {
 	tasks     []func()
@@ -56,7 +52,6 @@ type TaskScheduler struct {
 	wg        sync.WaitGroup
 	mu        sync.Mutex
 }
-
 // 创建新的任务调度器
 func NewTaskScheduler() *TaskScheduler {
 	return &TaskScheduler{
@@ -65,20 +60,16 @@ func NewTaskScheduler() *TaskScheduler {
 		results:   make([]TaskResult, 0),
 	}
 }
-
 // 添加任务
 func (ts *TaskScheduler) AddTask(name string, task Task) {
 	ts.tasks = append(ts.tasks, task)
 	ts.taskNames = append(ts.taskNames, name)
 }
-
-// 执行单个任务并记录结果
+// 执行单个任务
 func (ts *TaskScheduler) executeTask(index int) {
 	defer ts.wg.Done()
-
 	taskName := ts.taskNames[index]
 	task := ts.tasks[index]
-
 	startTime := time.Now()
 	result := TaskResult{
 		TaskName:  taskName,
@@ -100,31 +91,24 @@ func (ts *TaskScheduler) executeTask(index int) {
 		ts.results = append(ts.results, result)
 		ts.mu.Unlock()
 	}()
-
 	// 执行任务
 	task()
 }
-
 // 并发执行所有任务
 func (ts *TaskScheduler) Run() []TaskResult {
 	ts.results = make([]TaskResult, 0)
 	ts.wg.Add(len(ts.tasks))
-
 	fmt.Println("=== 第二题：任务调度器开始执行 ===")
 	startTime := time.Now()
-
 	// 启动协程并发执行所有任务
 	for i := 0; i < len(ts.tasks); i++ {
 		go ts.executeTask(i)
 	}
-
 	// 等待所有任务完成
 	ts.wg.Wait()
-
 	totalDuration := time.Since(startTime)
 	fmt.Printf("所有任务执行完成，总耗时: %v\n", totalDuration)
 	fmt.Println()
-
 	return ts.results
 }
 
@@ -141,7 +125,7 @@ func (ts *TaskScheduler) PrintResults() {
 	}
 }
 
-// 示例任务函数
+// 模拟任务函数
 func quickTask() {
 	time.Sleep(200 * time.Millisecond)
 	fmt.Println("快速任务执行完成")
@@ -173,24 +157,19 @@ func calculationTask() {
 func main() {
 	// 执行第一题：奇数偶数打印
 	printOddEven()
-
 	// 执行第二题：任务调度器
 	scheduler := NewTaskScheduler()
-
 	// 添加各种任务
 	scheduler.AddTask("快速任务", quickTask)
 	scheduler.AddTask("中等任务", mediumTask)
 	scheduler.AddTask("长时间任务", longTask)
 	scheduler.AddTask("计算任务", calculationTask)
 	scheduler.AddTask("错误任务", errorTask) // 这个任务会panic
-
 	// 并发执行所有任务并获取结果
 	results := scheduler.Run()
-
-	// 打印详细的执行结果
+	// 打印执行结果
 	scheduler.PrintResults()
-
-	// 统计成功和失败的任务数量
+	// 统计
 	successCount := 0
 	for _, result := range results {
 		if result.Success {
@@ -198,4 +177,5 @@ func main() {
 		}
 	}
 	fmt.Printf("\n任务执行统计: 成功 %d/%d\n", successCount, len(results))
+
 }
