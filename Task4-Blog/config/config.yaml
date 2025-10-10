@@ -1,0 +1,22 @@
+# 博客系统配置文件
+
+server:
+  port: 8080
+  mode: "debug"  # debug, release, test
+  read_timeout: 30
+  write_timeout: 30
+
+database:
+  host: "localhost"
+  port: 3306
+  user: "root"
+  password: "st123456"  # 请修改为你的MySQL密码
+  dbname: "blog_system"
+  charset: "utf8mb4"
+  max_idle_conns: 10    # 最大空闲连接数
+  max_open_conns: 100   # 最大打开连接数
+
+jwt:
+  secret: "blog-system-secret-key-change-in-production"
+  expire: 24            # token过期时间（小时）
+  issuer: "blog-system"
