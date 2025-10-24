@@ -1,0 +1,23 @@
+{
+    "name": "我的第一个NFT",
+    "description": "这是我在学习过程中创建的第一个NFT作品，展示了数字艺术的独特魅力。",
+    "image": "ipfs://bafybeia6yv7lq4bmvhgp5d2tqzjwodspqguzdbmdoxdrgxa24xnzftkxme",
+    "attributes": [
+        {
+            "trait_type": "创作者",
+            "value": "wcp"
+        },
+        {
+            "trait_type": "稀有度",
+            "value": "传说"
+        },
+        {
+            "trait_type": "创作日期",
+            "value": "2024"
+        },
+        {
+            "trait_type": "类型",
+            "value": "数字艺术"
+        }
+    ]
+}
